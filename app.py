@@ -353,55 +353,71 @@ def generate_notes(transcript, subject, filename, mode_key="heist"):
 
 SUBJECT EXPERTISE: {subject_expertise}
 
-VOICE AND TONE:
+=== ABSOLUTE RULE: NO HALLUCINATION ===
+If any part of the audio transcript is unclear, garbled, or you cannot confidently make out what was said - DO NOT GUESS. DO NOT ASSUME. DO NOT FILL IN WITH WHAT YOU THINK THE PROFESSOR MIGHT HAVE SAID. Instead, write [Audio quality issue] or [Unclear in recording] at that point and move on. Making up case names, facts, holdings, section numbers, or professor statements that aren't clearly in the transcript is the WORST thing you can do. If you're not sure, leave it out or flag it. Never hallucinate.
+
+=== CASES ARE THE MOST IMPORTANT PART ===
+Cases are the backbone of these notes. Every case the professor discusses must be captured IN FULL DETAIL. Do NOT reduce cases to one-line summaries or quick pointers. Here is how to handle every case:
+
+1. FACTS IN FULL: Write out ALL the facts as the professor narrated them. We need to know all the facts to understand the judgment. If the professor spent 5 minutes explaining the facts of a case, your notes should reflect that - not compress it into one sentence. Include the parties, what happened, what the dispute was about, how it reached the court.
+
+2. THE PROFESSOR'S DISSECTION: After the facts, capture HOW the professor dissects the case under the law. What legal questions did the professor identify? What arguments did each side make? How did the professor walk through the court's reasoning step by step? This is the most valuable part - the professor's analysis of why the court decided what it decided.
+
+3. THE HOLDING AND REASONING: What did the court hold and WHY? Not just "the court held X" but the full chain of reasoning the professor explained.
+
+4. PROFESSOR'S COMMENTARY: Any opinions, criticisms, connections to other cases, exam tips, or practical observations the professor made about the case.
+
+5. CONNECTIONS: How this case relates to earlier/later cases, whether it was overruled, followed, distinguished.
+
+DO NOT turn case discussions into bullet-point summaries. If the professor explained something in detail, your notes must have that detail. Do NOT cloak the main point and strip away the explanation behind it.
+
+=== EXPAND ON CONCEPTS, DON'T JUST LIST THEM ===
+When the professor explains a concept, capture the EXPLANATION, not just the label.
+
+BAD: "Triple test applied. Industry confirmed."
+GOOD: "Triple test applied. There is employer employee relationship - depends - estb character cannot be looked at and the arrangement has to be looked at. Amazon is an intermediary in terms of offering the platform to sellers but who delivers it at home? Delivery is outsourced. There is sub contractor for delivery but ultimately amazon decides it. Amazon has control over delivery channel."
+
+BAD: "CLF was more flexible than legislation."
+GOOD: "CLF was more flexible than legislative but allowed unions and employees to decide things themselves and respond to charging circumstances more rapidly. Min wage laws actually drive down the condition. The employers tend to move towards that floor as it's more preferable for them and not anything higher."
+
+The point AND the explanation behind the point must both be present. If the professor said it, it goes in the notes. Do not summarize away the substance.
+
+=== VOICE AND TONE ===
 - Write as if you ARE the student sitting in class, capturing the professor's words in real time
 - Mix the professor's voice with your own shorthand. "The court says..." "The prof argues..." "So the question is..."
-- When the professor gives an opinion, capture it raw like: "Prof thinks teachers should be workmen under the act" or "Sir believes if the doctor's report wasn't there, the case could have gone differently"
+- When the professor gives an opinion, capture it raw: "Prof thinks teachers should be workmen under the act" or "Sir believes if the doctor's report wasn't there, the case could have gone differently"
 - When the professor makes a joke or aside, include it naturally
 - Capture the professor's emphasis: "IMP", "very imp for exam", "read this case carefully"
 
-ABBREVIATIONS - USE THESE NATURALLY AND INCONSISTENTLY (like a real person):
+=== ABBREVIATIONS - USE NATURALLY AND INCONSISTENTLY ===
 bc = because, defn = definition, estb = establishment, diff = different, govt = government, consti = constitutional, wrt = with regard to, eco = economic, mnf = manufacturing, dom = dominant, esp = especially, u/ur = you/your, prof = professor, b/w = between, v = versus, sec = section, art = article, para = paragraph, SC = Supreme Court, HC = High Court
 
-STRUCTURE - FOLLOW THE LECTURE FLOW:
+Use abbreviations INCONSISTENTLY like a real person - sometimes "because", sometimes "bc". Don't be robotic about it.
+
+=== STRUCTURE - FOLLOW THE LECTURE FLOW ===
 - Follow the EXACT order the professor discusses topics. Do NOT reorganize into neat textbook sections
 - When the professor jumps between topics, your notes jump too
 - When the professor circles back, write "Coming back to..." or "So..."
 - Use headings ONLY for major topic shifts or case names
 - Case names get their own line as a heading
 
-CASE LAW - CRITICAL: Cases must be discussed AS THE PROFESSOR DISCUSSED THEM:
-- Case name with citation if mentioned
-- Facts as the professor narrated them (keep their storytelling style)
-- The professor's analysis woven in: "The court gets into..." "The court says..."
-- Quote specific paragraph numbers if mentioned: "(para 56)" or "Read page 313"
-- Professor's commentary: "This was called a broader interpretation judgment"
-- How this case connects to others: "This was overruled in BWSSB"
-- Add Indian Kanoon links: [Case Name](https://indiankanoon.org/search/?formInput=CASE+NAME+HERE)
-DO NOT format cases as Facts/Issues/Held/Ratio boxes. That's textbook style, not lecture notes.
-
-WHAT TO CAPTURE:
-- Every legal concept, case name, statutory provision, professor's opinion
-- Practical examples and analogies ("Is Amazon an industry?" "Is a beauty parlour an industry?")
-- Questions the professor asks the class and answers
-- Reading references, cross-references, Hindi words with context
-
-FORMATTING:
+=== FORMATTING ===
 - Markdown headings sparingly - only for new modules, major topics, case names
 - Bold key legal terms on FIRST mention only
-- Short bullet fragments for lists of elements/tests
-- Keep paragraphs as flowing lecture capture, not neat bullet summaries
-- Note unclear parts as [Unclear in recording]
+- Short bullet fragments ONLY for lists of elements/tests/conditions - NOT for case discussions or explanations
+- Keep paragraphs as flowing lecture capture
 - Use dashes freely, use fragments naturally
-- Do NOT over-polish. Keep it raw like real notes.
+- Do NOT over-polish
 
-DO NOT:
+=== DO NOT ===
+- HALLUCINATE. If you can't hear it, write [Audio quality issue]. NEVER make up case names, facts, or holdings.
+- Reduce case discussions to one-line pointers. Cases need FULL facts, reasoning, and professor's analysis.
+- Strip away explanations and leave only labels/pointers. The explanation IS the note.
 - Write like a textbook or encyclopedia
 - Create neat Facts/Issues/Held/Ratio boxes
 - Add sections the professor didn't discuss
 - Use formal language like "It is pertinent to note" or "The Hon'ble Court observed"
 - Over-structure with Roman numerals and nested sub-headings
-- Make every sentence a bullet point
 
 CRITICAL INSTRUCTION: {mode_config['instruction']}
 
@@ -454,7 +470,13 @@ def reformat_uploaded_notes(doc_text, subject, mode_key="robbery"):
 
 You have been given existing notes on {subject_expertise} that need to be reorganized and enhanced.
 
-Your task: 1. Restructure these notes following lecture-capture style. 2. Add exam tips and cross-references where relevant. 3. Link all case names to Indian Kanoon: [Case Name](https://indiankanoon.org/search/?formInput=CASE+NAME+ENCODED). 4. Preserve ALL original content. 5. Enhance definitions, add context to cases.
+Your task: 1. Restructure these notes following lecture-capture style. 2. Add exam tips and cross-references where relevant. 3. Link all case names to Indian Kanoon: [Case Name](https://indiankanoon.org/search/?formInput=CASE+NAME+ENCODED). 4. Preserve ALL original content - do NOT compress or summarize away detail. 5. Enhance definitions, add context to cases.
+
+ABSOLUTE RULE: Do NOT add any case names, facts, holdings, or legal information that is not present in the original notes. Do not hallucinate or assume. If something is unclear, mark it as [Unclear] and move on.
+
+CASES ARE THE MOST IMPORTANT PART: Every case must have full facts as written, the legal reasoning explained in detail, and any commentary preserved. Do NOT reduce cases to one-line pointers. The explanation behind every point must be kept.
+
+EXPAND ON CONCEPTS: Keep the point AND the explanation behind the point. If the original notes explain why something is the way it is, that explanation must stay in the restructured version. Do not cloak it into a short pointer.
 
 VOICE AND TONE:
 - Write as if a sharp student captured these in class
@@ -462,14 +484,12 @@ VOICE AND TONE:
 - Mix abbreviations inconsistently like a real person
 - Keep professor opinions and commentary raw
 
-CASE LAW - discuss cases narratively, NOT as Facts/Issues/Held/Ratio boxes. Use storytelling style.
-
 FORMATTING:
 - Markdown headings sparingly - only for major topics and case names
 - Bold key terms on first mention only
-- Short bullet fragments for tests and elements
-- Flowing paragraphs for discussion, not wall of bullets
-- Note unclear parts as [Unclear in recording]
+- Short bullet fragments ONLY for tests and elements - NOT for case discussions
+- Flowing paragraphs for case discussions and explanations
+- Note unclear parts as [Unclear]
 
 {mode_config['instruction']}"""
 
