@@ -608,7 +608,7 @@ st.markdown("""
     <span class="hero-icon">🎓</span>
     <h1>LectureChor</h1>
     <p class="tagline">You skip class. We take notes.</p>
-    <p class="sub-tagline">Powered by AI that actually paid attention</p>
+    <p class="sub-tagline">Powered by KJ who actually paid attention in class</p>
 </div>
 """, unsafe_allow_html=True)
 
