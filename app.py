@@ -7,7 +7,7 @@ Built with Streamlit + Whisper + Claude
 import streamlit as st
 import openai
 import anthropic
-import tempfile
+import tempfileh
 import os
 import io
 import time
@@ -783,7 +783,7 @@ if 'last_notes' in st.session_state:
 st.markdown("""
 <div class="app-footer">
     <div class="footer-brand">🎓 Built by KJ for LectureChors</div>
-    <div class="footer-sub">Whisper AI + Claude | Made with sleep deprivation and chai</div>
+    <div class="footer-sub">Made with sleep deprivation and chai</div>
     <div class="easter-egg">v4.0 — KJ was here — jeph.exe has stopped working — now with PickPocket, Robbery & Heist modes</div>
 </div>
 """, unsafe_allow_html=True)
