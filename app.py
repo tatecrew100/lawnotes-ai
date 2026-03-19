@@ -1,6 +1,6 @@
 """
-LawNotes AI — Web App
-Lecture Audio → Professional Law Notes
+LectureChor — AI Note Taker
+You skip class. We take notes.
 Built with Streamlit + Whisper + Claude
 """
 
@@ -18,69 +18,127 @@ from pathlib import Path
 
 # ─── Page Config ───
 st.set_page_config(
-    page_title="LawNotes AI",
-    page_icon="⚖️",
+    page_title="LectureChor",
+    page_icon="🎓",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# ─── Custom CSS (Modern Professional Theme) ───
+# ─── Custom CSS (Professional Dark Theme with Visual Flair) ───
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
+    /* ===== GLOBAL ===== */
     .stApp {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
+        background: #0B0F1A;
+        color: #E2E8F0;
     }
 
+    /* Animated gradient mesh background */
+    .stApp::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background:
+            radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+            radial-gradient(ellipse at 80% 20%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
+            radial-gradient(ellipse at 50% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* ===== HERO HEADER ===== */
     .hero {
         text-align: center;
-        padding: 2.5rem 0 1.5rem;
+        padding: 2rem 0 1rem;
+        position: relative;
+    }
+    .hero-icon {
+        font-size: 3.5rem;
+        margin-bottom: 0.5rem;
+        display: block;
+        filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.4));
     }
     .hero h1 {
-        font-family: 'Playfair Display', serif;
-        font-size: 3rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, #60A5FA 0%, #A78BFA 50%, #F472B6 100%);
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #818CF8 0%, #C084FC 40%, #F472B6 70%, #FB923C 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 0.5rem;
-        letter-spacing: -1px;
+        margin-bottom: 0.3rem;
+        letter-spacing: -1.5px;
     }
-    .hero p {
-        font-size: 1.05rem;
+    .hero .tagline {
+        font-size: 1.1rem;
         color: #94A3B8;
         font-weight: 400;
-        letter-spacing: 0.2px;
+        font-style: italic;
+    }
+    .hero .sub-tagline {
+        font-size: 0.8rem;
+        color: #475569;
+        margin-top: 0.3rem;
     }
 
+    /* ===== GLASS CARD ===== */
+    .glass-card {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(99, 102, 241, 0.15);
+        border-radius: 20px;
+        padding: 2rem;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    .glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.3), transparent);
+    }
+
+    /* ===== UPLOAD AREA ===== */
     [data-testid="stFileUploader"] {
-        border: 2px dashed #334155 !important;
+        border: 2px dashed rgba(99, 102, 241, 0.3) !important;
         border-radius: 16px !important;
-        padding: 1rem !important;
-        transition: border-color 0.3s ease;
+        padding: 1.5rem !important;
+        background: rgba(99, 102, 241, 0.03) !important;
+        transition: all 0.3s ease;
     }
     [data-testid="stFileUploader"]:hover {
-        border-color: #60A5FA !important;
+        border-color: rgba(99, 102, 241, 0.6) !important;
+        background: rgba(99, 102, 241, 0.06) !important;
     }
 
+    /* ===== BUTTONS ===== */
     .stButton > button[kind="primary"] {
-        background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%) !important;
+        background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%) !important;
         border: none !important;
-        border-radius: 12px !important;
-        padding: 0.75rem 2rem !important;
-        font-weight: 600 !important;
+        border-radius: 14px !important;
+        padding: 0.8rem 2rem !important;
+        font-weight: 700 !important;
         font-size: 1rem !important;
-        letter-spacing: 0.3px;
+        letter-spacing: 0.5px;
         transition: all 0.3s ease !important;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3) !important;
+        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4) !important;
+        text-transform: uppercase;
     }
     .stButton > button[kind="primary"]:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 25px rgba(59, 130, 246, 0.4) !important;
+        transform: translateY(-3px) scale(1.02) !important;
+        box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5) !important;
     }
 
+    /* ===== STATUS CARDS ===== */
     .status-card {
         padding: 1rem 1.4rem;
         border-radius: 14px;
@@ -89,32 +147,22 @@ st.markdown("""
         backdrop-filter: blur(10px);
     }
     .status-processing {
-        background: rgba(251, 191, 36, 0.1);
+        background: rgba(251, 191, 36, 0.08);
         border-left: 4px solid #F59E0B;
         color: #FCD34D;
     }
     .status-done {
-        background: rgba(16, 185, 129, 0.1);
+        background: rgba(16, 185, 129, 0.08);
         border-left: 4px solid #10B981;
         color: #6EE7B7;
     }
     .status-error {
-        background: rgba(239, 68, 68, 0.1);
+        background: rgba(239, 68, 68, 0.08);
         border-left: 4px solid #EF4444;
         color: #FCA5A5;
     }
 
-    .notes-container {
-        background: rgba(30, 41, 59, 0.8);
-        border: 1px solid #334155;
-        border-radius: 16px;
-        padding: 2rem;
-        margin: 1rem 0;
-        font-size: 0.95rem;
-        line-height: 1.8;
-        backdrop-filter: blur(10px);
-    }
-
+    /* ===== STATS ROW ===== */
     .stats-row {
         display: flex;
         gap: 1rem;
@@ -122,60 +170,133 @@ st.markdown("""
     }
     .stat-box {
         flex: 1;
-        background: rgba(30, 41, 59, 0.6);
-        border: 1px solid #334155;
-        border-radius: 14px;
-        padding: 1rem 1.2rem;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(99, 102, 241, 0.12);
+        border-radius: 16px;
+        padding: 1.2rem;
         text-align: center;
-        transition: transform 0.2s ease, border-color 0.2s ease;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .stat-box::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #6366F1, #A855F7);
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
     .stat-box:hover {
-        transform: translateY(-2px);
-        border-color: #60A5FA;
+        transform: translateY(-3px);
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15);
+    }
+    .stat-box:hover::before {
+        opacity: 1;
     }
     .stat-box .num {
+        font-family: 'Space Grotesk', sans-serif;
         font-size: 1.6rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #60A5FA, #A78BFA);
+        background: linear-gradient(135deg, #818CF8, #C084FC);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
     .stat-box .label {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         color: #64748B;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 1.5px;
         font-weight: 600;
-        margin-top: 0.3rem;
+        margin-top: 0.4rem;
     }
 
-    .password-box {
-        max-width: 420px;
-        margin: 5rem auto;
+    /* ===== PASSWORD SCREEN ===== */
+    .password-screen {
+        max-width: 400px;
+        margin: 4rem auto;
         text-align: center;
-        background: rgba(30, 41, 59, 0.6);
-        border: 1px solid #334155;
-        border-radius: 20px;
-        padding: 3rem 2.5rem;
-        backdrop-filter: blur(10px);
+    }
+    .password-screen .lock-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+        filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.3));
+    }
+    .password-screen h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #818CF8, #C084FC);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.3rem;
+    }
+    .password-screen .subtitle {
+        color: #64748B;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
     }
 
+    /* ===== DOWNLOAD BUTTONS ===== */
     .stDownloadButton > button {
         width: 100%;
         border-radius: 12px !important;
-        padding: 0.65rem !important;
+        padding: 0.7rem !important;
         font-weight: 600 !important;
-        background: rgba(30, 41, 59, 0.8) !important;
-        border: 1px solid #334155 !important;
-        color: #E2E8F0 !important;
+        background: rgba(99, 102, 241, 0.08) !important;
+        border: 1px solid rgba(99, 102, 241, 0.2) !important;
+        color: #C7D2FE !important;
         transition: all 0.3s ease !important;
     }
     .stDownloadButton > button:hover {
-        border-color: #60A5FA !important;
-        background: rgba(59, 130, 246, 0.1) !important;
-        transform: translateY(-1px) !important;
+        border-color: rgba(99, 102, 241, 0.5) !important;
+        background: rgba(99, 102, 241, 0.15) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2) !important;
     }
 
+    /* ===== SECTION DIVIDER ===== */
+    .section-divider {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 1.5rem 0;
+    }
+    .section-divider .line {
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.2), transparent);
+    }
+    .section-divider .icon {
+        color: #6366F1;
+        font-size: 1.2rem;
+    }
+
+    /* ===== FEATURE PILLS ===== */
+    .feature-pills {
+        display: flex;
+        justify-content: center;
+        gap: 0.8rem;
+        margin: 1rem 0;
+        flex-wrap: wrap;
+    }
+    .pill {
+        background: rgba(99, 102, 241, 0.08);
+        border: 1px solid rgba(99, 102, 241, 0.15);
+        border-radius: 100px;
+        padding: 0.4rem 1rem;
+        font-size: 0.75rem;
+        color: #A5B4FC;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+    }
+
+    /* ===== DEFAULTS CLEANUP ===== */
     header[data-testid="stHeader"] {
         background: transparent;
     }
@@ -183,30 +304,57 @@ st.markdown("""
         max-width: 780px;
         padding-top: 1rem;
     }
-
     hr {
-        border-color: #1E293B !important;
-        opacity: 0.5;
+        border-color: rgba(99, 102, 241, 0.1) !important;
     }
-
     .stTextInput input {
-        border-radius: 10px !important;
-        border: 1px solid #334155 !important;
-        background: rgba(15, 23, 42, 0.6) !important;
-        transition: border-color 0.3s ease !important;
+        border-radius: 12px !important;
+        border: 1px solid rgba(99, 102, 241, 0.2) !important;
+        background: rgba(15, 23, 42, 0.8) !important;
+        color: #E2E8F0 !important;
+        transition: all 0.3s ease !important;
     }
     .stTextInput input:focus {
-        border-color: #60A5FA !important;
-        box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2) !important;
+        border-color: #6366F1 !important;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
     }
 
+    /* ===== FOOTER ===== */
     .app-footer {
         text-align: center;
-        color: #475569;
-        font-size: 0.8rem;
         padding: 2rem 0 1rem;
-        border-top: 1px solid #1E293B;
-        margin-top: 2rem;
+        margin-top: 3rem;
+        position: relative;
+    }
+    .app-footer::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 20%;
+        right: 20%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.2), transparent);
+    }
+    .app-footer .footer-brand {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.85rem;
+        color: #475569;
+        font-weight: 500;
+    }
+    .app-footer .footer-sub {
+        font-size: 0.7rem;
+        color: #334155;
+        margin-top: 0.3rem;
+    }
+    .app-footer .easter-egg {
+        font-size: 0.65rem;
+        color: #1E293B;
+        margin-top: 0.5rem;
+        cursor: default;
+        transition: color 0.5s ease;
+    }
+    .app-footer .easter-egg:hover {
+        color: #6366F1;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -220,23 +368,33 @@ CLAUDE_MODEL = "claude-sonnet-4-20250514"
 APP_PASSWORD = st.secrets.get("APP_PASSWORD", "lawnotes2026")
 
 def check_password():
-    """Simple password gate."""
+    """Password gate with clean design."""
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
     if st.session_state.authenticated:
         return True
 
-    st.markdown('<div class="password-box">', unsafe_allow_html=True)
-    st.markdown("## ⚖️ LawNotes AI")
-    st.markdown("Enter the password to access")
-    pwd = st.text_input("Password", type="password", key="pwd_input")
-    if st.button("Enter", use_container_width=True):
+    st.markdown("""
+    <div class="password-screen">
+        <span class="lock-icon">🔒</span>
+        <h2>LectureChor</h2>
+        <p class="subtitle">You skip class. We take notes.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    pwd = st.text_input("Password", type="password", key="pwd_input", label_visibility="collapsed", placeholder="Enter password to continue...")
+    if st.button("Unlock", use_container_width=True, type="primary"):
         if pwd == APP_PASSWORD:
             st.session_state.authenticated = True
             st.rerun()
         else:
-            st.error("Incorrect password")
-    st.markdown('</div>', unsafe_allow_html=True)
+            st.error("Wrong password. Are you sure you're a LectureChor?")
+
+    st.markdown("""
+    <div style="text-align: center; margin-top: 2rem;">
+        <span style="font-size: 0.75rem; color: #334155;">Hint: Ask a fellow chor</span>
+    </div>
+    """, unsafe_allow_html=True)
     return False
 
 def get_file_size_mb(filepath):
@@ -308,12 +466,12 @@ def transcribe_audio(filepath, subject, progress_callback=None):
     return " ".join(full_transcript)
 
 def generate_notes(transcript, subject, filename):
-    """Generate structured notes with Claude — Expert Indian Law Professor persona."""
+    """Generate structured notes with Claude — Professor Kanishka Jeph persona."""
     client = anthropic.Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
 
     subject_expertise = subject if subject else "Indian Law"
 
-    system_prompt = f"""You are Professor Vikas Sharma, a distinguished legal scholar with over 50 years of experience in Indian law. You hold a D.Litt. in Jurisprudence from the University of Delhi, have argued landmark cases before the Supreme Court of India, and have been a visiting professor at NLU Delhi, NALSAR, and NLU Jodhpur. You are now retired and dedicate your time to mentoring LLM students.
+    system_prompt = f"""You are Professor Kanishka Jeph, a distinguished legal scholar with over 50 years of experience in Indian law. You hold a D.Litt. in Jurisprudence from the University of Delhi, have argued landmark cases before the Supreme Court of India, and have been a visiting professor at NLU Delhi, NALSAR, and NLU Jodhpur. You are now retired and dedicate your time to mentoring LLM students.
 
 Your specific expertise is in {subject_expertise}, though you are deeply knowledgeable across all branches of Indian law — Constitutional, Criminal, Civil, Administrative, Corporate, Intellectual Property, Environmental, International, Family, Labour, and Taxation law.
 
@@ -332,6 +490,7 @@ Your personality:
 - You sometimes share brief anecdotes from your courtroom experience when relevant
 - You are passionate about the Indian legal system and its development
 - You emphasize understanding over memorization
+- You have a dry wit and occasionally make clever observations
 
 When creating notes, your output must be structured as follows:
 
@@ -361,6 +520,8 @@ When creating notes, your output must be structured as follows:
 
 8. **CONNECTIONS & CROSS-REFERENCES** — Links to other areas of Indian law, recent judicial trends, and Law Commission recommendations if relevant.
 
+9. **PROFESSOR JEPH'S NOTE** — At the end, add 2-3 personal observations or tips from your decades of experience that would help students truly understand this topic beyond the textbook.
+
 FORMATTING RULES:
 - Use clear markdown headings (# for sections, ## for sub-topics, ### for specifics)
 - Bold key terms on first mention
@@ -370,8 +531,7 @@ FORMATTING RULES:
 - If the transcript is unclear at any point, note it as [Unclear in recording]
 - If Hindi words appear, include them with English translation where possible
 - Preserve the logical flow of the lecture
-- Be thorough — capture everything
-- Add brief "Professor Sharma's Note" boxes where you provide additional insight"""
+- Be thorough — capture everything"""
 
     subject_line = f"**Subject: {subject}**\n" if subject else ""
 
@@ -394,7 +554,7 @@ TRANSCRIPT:
 
 ---
 
-Generate complete structured notes now, Professor Sharma."""
+Generate complete structured notes now, Professor Jeph."""
         }]
     )
 
@@ -443,7 +603,7 @@ def create_docx_bytes(notes_text, subject, filename):
 
     m = doc.add_paragraph()
     m.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = m.add_run(f"Generated: {datetime.now().strftime('%B %d, %Y')}\nSource: {filename}\nBy LawNotes AI")
+    r = m.add_run(f"Generated: {datetime.now().strftime('%B %d, %Y')}\nSource: {filename}\nBy LectureChor AI")
     r.font.size = Pt(10)
     r.font.color.rgb = RGBColor(0x80, 0x80, 0x80)
 
@@ -506,20 +666,38 @@ if not check_password():
 # Hero
 st.markdown("""
 <div class="hero">
-    <h1>⚖️ LawNotes AI</h1>
-    <p>Upload a lecture recording → Get professional law notes in minutes</p>
+    <span class="hero-icon">🎓</span>
+    <h1>LectureChor</h1>
+    <p class="tagline">You skip class. We take notes.</p>
+    <p class="sub-tagline">Powered by AI that actually paid attention</p>
+</div>
+""", unsafe_allow_html=True)
+
+# Feature pills
+st.markdown("""
+<div class="feature-pills">
+    <span class="pill">🎙️ Whisper Transcription</span>
+    <span class="pill">🧠 Claude AI Notes</span>
+    <span class="pill">📄 Word Export</span>
+    <span class="pill">🇮🇳 Hindi + English</span>
 </div>
 """, unsafe_allow_html=True)
 
 # Divider
-st.markdown("---")
+st.markdown("""
+<div class="section-divider">
+    <div class="line"></div>
+    <span class="icon">✨</span>
+    <div class="line"></div>
+</div>
+""", unsafe_allow_html=True)
 
 # Upload section
 col1, col2 = st.columns([2, 1])
 
 with col1:
     uploaded_file = st.file_uploader(
-        "Upload lecture audio",
+        "Drop your lecture audio here",
         type=["mp3", "m4a", "wav", "mp4", "ogg", "flac", "webm"],
         help="Supports MP3, M4A, WAV, MP4, OGG, FLAC, WebM — up to 500MB"
     )
@@ -528,7 +706,7 @@ with col2:
     subject = st.text_input(
         "Subject",
         placeholder="e.g., Constitutional Law",
-        help="Helps improve transcription accuracy and Claude's expertise"
+        help="Helps AI focus on the right area of law"
     )
 
 # Process button
@@ -552,7 +730,7 @@ if uploaded_file is not None:
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("🚀 Generate Notes", use_container_width=True, type="primary"):
+    if st.button("⚡ Generate Notes", use_container_width=True, type="primary"):
 
         with tempfile.NamedTemporaryFile(delete=False, suffix=f".{uploaded_file.name.split('.')[-1]}") as tmp:
             tmp.write(uploaded_file.getvalue())
@@ -560,7 +738,7 @@ if uploaded_file is not None:
 
         try:
             # Step 1: Transcribe
-            with st.status("🎤 Transcribing audio with Whisper AI...", expanded=True) as status:
+            with st.status("🎙️ Transcribing audio with Whisper AI...", expanded=True) as status:
                 st.write(f"Processing {file_size_mb:.1f}MB audio file...")
                 start_time = time.time()
                 transcript = transcribe_audio(tmp_path, subject)
@@ -570,17 +748,24 @@ if uploaded_file is not None:
                 status.update(label="✅ Transcription complete", state="complete")
 
             # Step 2: Generate Notes
-            with st.status("🧠 Professor Sharma is generating structured notes...", expanded=True) as status:
+            with st.status("🧠 Professor Jeph is preparing your notes...", expanded=True) as status:
                 st.write("Analyzing transcript for legal concepts, case law, definitions...")
                 start_time = time.time()
                 notes = generate_notes(transcript, subject, uploaded_file.name)
                 notes_time = time.time() - start_time
                 st.write(f"✅ Notes generated in {notes_time:.0f}s")
-                status.update(label="✅ Notes generated", state="complete")
+                status.update(label="✅ Notes generated by Prof. Jeph", state="complete")
 
             # Step 3: Display Results
-            st.markdown("---")
-            st.markdown("### 📋 Your Notes")
+            st.markdown("""
+            <div class="section-divider">
+                <div class="line"></div>
+                <span class="icon">📚</span>
+                <div class="line"></div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.markdown("### 📋 Your Notes Are Ready")
 
             # Stats
             total_time = transcribe_time + notes_time
@@ -601,10 +786,9 @@ if uploaded_file is not None:
             </div>
             """, unsafe_allow_html=True)
 
-            # DOWNLOADS AT THE TOP (before notes)
-            st.markdown("### 📥 Download Your Notes")
+            # DOWNLOADS AT THE TOP
+            st.markdown("#### 📥 Download")
             col_a, col_b, col_c = st.columns(3)
-
             safe_name = subject.replace(' ', '_')[:20] if subject else "Lecture"
 
             with col_a:
@@ -612,38 +796,44 @@ if uploaded_file is not None:
                 st.download_button(
                     "📄 Word Document",
                     data=docx_bytes,
-                    file_name=f"Notes_{safe_name}_{datetime.now().strftime('%Y%m%d')}.docx",
+                    file_name=f"LectureChor_{safe_name}_{datetime.now().strftime('%Y%m%d')}.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     use_container_width=True
                 )
 
             with col_b:
                 md_content = f"# Lecture Notes: {subject or uploaded_file.name}\n"
-                md_content += f"*Generated: {datetime.now().strftime('%B %d, %Y')}*\n\n"
+                md_content += f"*Generated by LectureChor: {datetime.now().strftime('%B %d, %Y')}*\n\n"
                 md_content += notes
                 st.download_button(
                     "📝 Markdown",
                     data=md_content,
-                    file_name=f"Notes_{safe_name}_{datetime.now().strftime('%Y%m%d')}.md",
+                    file_name=f"LectureChor_{safe_name}_{datetime.now().strftime('%Y%m%d')}.md",
                     mime="text/markdown",
                     use_container_width=True
                 )
 
             with col_c:
                 st.download_button(
-                    "🎤 Transcript",
+                    "🎙️ Transcript",
                     data=transcript,
                     file_name=f"Transcript_{safe_name}_{datetime.now().strftime('%Y%m%d')}.txt",
                     mime="text/plain",
                     use_container_width=True
                 )
 
-            st.markdown("---")
+            st.markdown("""
+            <div class="section-divider">
+                <div class="line"></div>
+                <span class="icon">📖</span>
+                <div class="line"></div>
+            </div>
+            """, unsafe_allow_html=True)
 
             # Notes display (AFTER download buttons)
             st.markdown(notes)
 
-            # Save to session for re-download
+            # Save to session
             st.session_state['last_notes'] = notes
             st.session_state['last_transcript'] = transcript
 
@@ -658,10 +848,11 @@ if uploaded_file is not None:
         finally:
             os.unlink(tmp_path)
 
-# Footer
-st.markdown("---")
+# Footer with easter eggs
 st.markdown("""
 <div class="app-footer">
-    Built with Whisper AI + Claude | LawNotes AI ⚖️
+    <div class="footer-brand">🎓 Built by KJ for LectureChors</div>
+    <div class="footer-sub">Whisper AI + Claude | Made with sleep deprivation and chai</div>
+    <div class="easter-egg">v2.0 — KJ was here — jeph.exe has stopped working</div>
 </div>
 """, unsafe_allow_html=True)
